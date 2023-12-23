@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>颜色自适应图片主题颜色</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: rgb(256, 180, 188); /* 设置页面的背景颜色 */
+      overflow: hidden; /* 隐藏溢出的元素 */
+    }
+
+    #image-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .side-image {
+      height: auto;
+      max-width: 100%;
+      display: block;
+      margin: 0 200px; /* 侧边图片间距 */
+      border: 5px solid #fff; /* 侧边图片边框颜色 */
+      border-radius: 8px; /* 侧边图片边框圆角 */
+      filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5)); /* 侧边图片阴影效果 */
+      transition: transform 0.3s ease; /* 侧边图片过渡效果 */
+    }
+
+    .side-image:hover {
+      transform: scale(1.1); /* 鼠标悬停时放大侧边图片 */
+    }
+
+    #bordered-image {
+      height: 1100px;
+      max-width: 100%;
+      display: block;
+      border: 10px solid #fff; /* 主图片边框颜色 */
+      border-radius: 15px; /* 主图片边框圆角 */
+      filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5)); /* 主图片阴影效果 */
+      transition: transform 0.3s ease; /* 主图片过渡效果 */
+    }
+
+    #bordered-image:hover {
+      transform: scale(1.05); /* 鼠标悬停时放大主图片 */
+    }
+
+    .shooting-star {
+      position: absolute;
+      width: 40px; /* 调整星星的大小 */
+      height: 40px;
+      background-color: #ffd700; /* 星星颜色 */
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); /* 五角星形状 */
+      opacity: 0; /* 初始不可见，等动画开始时再显示 */
+      animation: shootingStar 1s linear infinite;
+    }
+
+    @keyframes shootingStar {
+      0%, 100% {
+        transform: translateY(0);
+        opacity: 0; /* 初始状态和结束状态不可见 */
+      }
+      50% {
+        transform: translateY(-15px);
+        opacity: 1; /* 中间状态可见 */
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="image-container">
+  <img class="side-image" src="l2.png" alt="左侧图片">
+  <img id="bordered-image" src="output.gif" alt="主图片">
+  <img class="side-image" src="r2.png" alt="右侧图片">
+</div>
+
+<!-- 流星雨效果 -->
+<div class="shooting-star" style="top: 5vh; left: 10vw;"></div>
+<div class="shooting-star" style="top: 15vh; left: 30vw;"></div>
+<div class="shooting-star" style="top: 25vh; left: 50vw;"></div>
+<div class="shooting-star" style="top: 10vh; left: 70vw;"></div>
+<div class="shooting-star" style="top: 20vh; left: 90vw;"></div>
+
+<script>
+  // 在页面加载后执行
+  window.onload = function () {
+    var image = document.getElementById("bordered-image");
+
+    // 创建一个用于提取颜色的Canvas元素
+    var canvas = document.createElement("canvas");
+    var context = canvas.getContext("2d");
+
+    // 将Canvas调整为与图片一样的尺寸
+    canvas.width = image.width;
+    canvas.height = image.height;
+
+    // 在Canvas上绘制图片
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+    // 获取图片的主题颜色
+    var color = getAverageColor(canvas);
+
+    // 将边框颜色设置为图片主题颜色
+    image.style.borderColor = color;
+  };
+
+  // 获取图片的主题颜色
+  function getAverageColor(canvas) {
+    var context = canvas.getContext("2d");
+    var imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
+
+    var r = 0, g = 0, b = 0;
+
+    for (var i = 0; i < imageData.length; i += 4) {
+      r += imageData[i];
+      g += imageData[i + 1];
+      b += imageData[i + 2];
+    }
+
+    var totalPixels = imageData.length / 4;
+    var averageColor = {
+      r: Math.round(r / totalPixels),
+      g: Math.round(g / totalPixels),
+      b: Math.round(b / totalPixels)
+    };
+
+    return `rgb(${averageColor.r}, ${averageColor.g}, ${averageColor.b})`;
+  }
+</script>
+
+</body>
+</html>
